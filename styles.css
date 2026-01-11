@@ -1,0 +1,342 @@
+/* =============== */
+/* THEME VARIABLES */
+/* =============== */
+
+:root {
+  --bg: #191919;
+
+  /* Card / box color (dark mode) */
+  --tile: #ffffff;
+
+  /* Digit color (dark mode) */
+  --digit: #000000;
+
+  /* Hinge line color should match tile */
+  --hinge: var(--tile);
+
+  --radius: 1.6rem;
+  --gap: 0.7rem;
+
+  /* Make cards taller than wide */
+  --card-w: 17.0rem;
+  --card-h: 19.5rem;
+
+  --font: "Bebas Neue", Arial, sans-serif;
+
+  --flip-duration: 520ms;
+  --shadow-strength: 0.20;
+}
+
+html[data-theme="light"] {
+  --bg: #ffffff;
+
+  /* Card / box color (light mode) */
+  --tile: #000000;
+
+  /* Digit color (light mode) */
+  --digit: #ffffff;
+
+  /* Hinge line matches tile */
+  --hinge: var(--tile);
+}
+
+/* ========================== */
+/* IFRAME-FILL + SCALE SYSTEM */
+/* ========================== */
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  overflow: hidden;
+}
+
+#frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* Stage is always centered (true responsive center) */
+#stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  /* Let content define size instead of hard-coded width/height */
+  display: inline-block;
+
+  transform-origin: center center;
+  will-change: transform;
+}
+
+/* ================= */
+/* THEME TOGGLE BTN  */
+/* ================= */
+
+#themeToggle {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.2rem;
+
+  background: none;
+  border: none;
+  padding: 0;
+
+  font-family: var(--font);
+  font-size: 1.0rem;     /* ✅ smaller icon */
+  line-height: 1;
+
+  cursor: pointer;
+  user-select: none;
+
+  color: var(--digit);    /* keeps matching your theme */
+  opacity: 0.35;          /* ✅ “greyed out” look */
+  z-index: 999;           /* ✅ above the flip layers so it’s clickable */
+  pointer-events: auto;   /* ✅ ensure click works */
+
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+
+#themeToggle:hover {
+  opacity: 0.85;
+  transform: scale(1.06);
+}
+
+/* ============== */
+/* CLOCK LAYOUT   */
+/* ============== */
+
+.clock {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap);
+}
+
+/* ============== */
+/* TIME CARD      */
+/* ============== */
+
+.time-card {
+  width: var(--card-w);
+  height: var(--card-h);
+  perspective: 1000px;
+  position: relative; /* needed for corner labels */
+}
+
+.flip {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--tile);
+
+  box-shadow:
+    0 1.2rem 2.8rem rgba(0, 0, 0, 0.40),
+    0 0.35rem 0.8rem rgba(0, 0, 0, 0.28);
+}
+
+html[data-theme="light"] .flip {
+  box-shadow:
+    0 1.2rem 2.8rem rgba(0, 0, 0, 0.22),
+    0 0.35rem 0.8rem rgba(0, 0, 0, 0.16);
+}
+
+/* ============================= */
+/* HINGE LINE (cuts through digits) */
+/* ============================= */
+
+.flip::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 0.18rem;
+  background: var(--hinge);
+  transform: translateY(-50%);
+  z-index: 50; /* above digits */
+  pointer-events: none;
+}
+
+/* -----------------------------------------
+   FULL-HEIGHT FACE, CLIPPED BY HALVES
+------------------------------------------ */
+
+.half {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.half.top { top: 0; }
+.half.bottom { bottom: 0; }
+
+.face {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 200%;
+
+  display: grid;
+  place-items: center;
+
+  font-family: var(--font);
+  font-weight: 500;
+  font-size: 15.0rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+
+  color: var(--digit);
+
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.face .val {
+  display: inline-block;
+  line-height: 1;
+  min-width: 1.2ch;
+  text-align: center;
+}
+
+.half.top .face { top: 0; }
+.half.bottom .face { bottom: 0; }
+
+/* ========================= */
+/* FLIPPING OVERLAY HALVES   */
+/* ========================= */
+
+.flip .flip-top,
+.flip .flip-bottom {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+
+  z-index: 20;
+}
+
+.flip .flip-top {
+  top: 0;
+  transform-origin: 50% 100%;
+}
+
+.flip .flip-bottom {
+  bottom: 0;
+  transform-origin: 50% 0%;
+  transform: rotateX(90deg);
+}
+
+.flip-top .face { height: 200%; top: 0; }
+.flip-bottom .face { height: 200%; bottom: 0; }
+
+/* subtle shading */
+.shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 80ms linear;
+}
+
+.flip-top .shade {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, var(--shadow-strength)),
+    rgba(0, 0, 0, 0)
+  );
+}
+
+.flip-bottom .shade {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, var(--shadow-strength)),
+    rgba(0, 0, 0, 0)
+  );
+}
+
+html[data-theme="light"] .flip-top .shade,
+html[data-theme="light"] .flip-bottom .shade {
+  --shadow-strength: 0.12;
+}
+
+/* flip animations */
+.flip.is-flipping .flip-top {
+  animation: flipTop var(--flip-duration) ease-in forwards;
+}
+
+.flip.is-flipping .flip-bottom {
+  animation: flipBottom var(--flip-duration) ease-out forwards;
+  animation-delay: calc(var(--flip-duration) * 0.52);
+}
+
+.flip.is-flipping .flip-top .shade,
+.flip.is-flipping .flip-bottom .shade {
+  opacity: 1;
+}
+
+@keyframes flipTop {
+  0%   { transform: rotateX(0deg); }
+  100% { transform: rotateX(-90deg); }
+}
+
+@keyframes flipBottom {
+  0%   { transform: rotateX(90deg); }
+  100% { transform: rotateX(0deg); }
+}
+
+/* ============================= */
+/* AM/PM & WEEKDAY CORNER LABELS */
+/* ============================= */
+
+.card-label {
+  position: absolute;
+  z-index: 60; /* above hinge line */
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 1.45rem;
+  letter-spacing: 0em;
+  opacity: 0.85;
+  pointer-events: none;
+  color: var(--digit);
+}
+
+.ampm {
+  bottom: 1rem;
+  left: 1.3rem;
+}
+
+.weekday {
+  bottom: 1rem;
+  right: 1.3rem;
+  text-align: right;
+}
+
+/* ========================= */
+/* CORNER THEME TOGGLE ICON */
+/* ========================= */
+
+.time-card {
+  position: relative; /* anchor for the button */
+}

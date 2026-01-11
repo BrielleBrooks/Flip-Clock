@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flip Clock (HH:MM)</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+
+  <script>
+  (function () {
+    const KEY = "notion-flipclock-theme";
+
+    function getCookie(name) {
+      const m = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+      return m ? decodeURIComponent(m[2]) : null;
+    }
+
+    let theme = null;
+    try { theme = localStorage.getItem(KEY); } catch (e) {}
+    if (!theme) theme = getCookie(KEY);
+
+    if (theme === "light" || theme === "dark") {
+      document.documentElement.setAttribute("data-theme", theme);
+    }
+  })();
+</script>
+
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <div id="frame" aria-label="Flip clock widget">
+    <div id="stage">
+      <div class="clock" role="group" aria-label="Clock showing hours and minutes">
+        <!-- HOURS -->
+        <div class="time-card" data-slot="hh" aria-label="Hours">
+          <div class="card-label ampm">AM</div>
+        </div>
+
+<!-- MINUTES -->
+<div class="time-card" data-slot="mm" aria-label="Minutes">
+  <button id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
+    <span class="icon" aria-hidden="true">☾</span>
+  </button>
+
+  <div class="card-label weekday">MONDAY</div>
+</div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
