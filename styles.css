@@ -1,3 +1,8 @@
+html,
+body {
+  background: transparent !important;
+}
+
 /* =============== */
 /* THEME VARIABLES */
 /* =============== */
@@ -52,17 +57,22 @@ body {
 }
 
 body {
-  background: var(--bg);
+  background: transparent !important; /* ✅ makes iframe corners transparent */
   overflow: hidden;
 }
+
 
 #frame {
   position: relative;
   width: 100%;
   height: 100%;
-  background: var(--bg);
-  overflow: hidden;
+
+  background: transparent !important; /* ✅ prevents white/colored corners */
+  border-radius: 20px;               /* ✅ choose your corner roundness */
+  overflow: hidden;                  /* ✅ clips everything to rounded corners */
+  isolation: isolate;                /* ✅ “iframe corner safety rule” */
 }
+
 
 /* Stage is always centered (true responsive center) */
 #stage {
